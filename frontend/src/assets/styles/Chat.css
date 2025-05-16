@@ -1,0 +1,123 @@
+.chat-container {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-header h2 {
+  margin: 0;
+}
+
+.logout-button {
+  background-color: #ff4d4d;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #e60000;
+}
+
+.messages-box {
+  border: 1px solid #ccc;
+  padding: 10px;
+  height: 300px;
+  overflow-y: auto;
+  margin-top: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.message {
+  margin: 8px 0;
+}
+
+.message b {
+  color: #0077cc;
+}
+
+.chat-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.chat-controls select,
+.chat-controls input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.chat-controls button {
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.chat-controls button:hover {
+  background-color: #005fa3;
+}
+.chat-controls button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.chat-controls button:disabled:hover {
+  background-color: #ccc;
+}
+.chat-controls input[type='text'] {
+  width: 100%;
+}
+.chat-controls input[type='text']:focus {
+  outline: none;
+  border-color: #0077cc;
+}
+.chat-controls select:focus {
+  outline: none;
+  border-color: #0077cc;
+}
+.chat-controls input[type='text']::placeholder {
+  color: #aaa;
+}
+.chat-controls select option {
+  padding: 8px;
+}
+.chat-controls select option:hover {
+  background-color: #f0f0f0;
+}
+.chat-controls select option:active {
+  background-color: #e0e0e0;
+}
+.chat-controls select option:focus {
+  background-color: #d0d0d0;
+}
+.chat-controls select option:disabled {
+  background-color: #f9f9f9;
+  color: #aaa;
+}
+.chat-controls select option:disabled:hover {
+  background-color: #f9f9f9;
+}
+.chat-controls select option:disabled:active {
+  background-color: #f9f9f9;
+}

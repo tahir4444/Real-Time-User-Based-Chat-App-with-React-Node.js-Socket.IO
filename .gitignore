@@ -1,0 +1,41 @@
+# ========== Node.js (backend/) ==========
+backend/node_modules/
+backend/.env
+backend/.env.local
+backend/*.log
+backend/logs/
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+
+# ========== React (frontend/) ==========
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# ========== OS Files ==========
+.DS_Store
+Thumbs.db
+
+# ========== IDEs ==========
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# ========== Logs & PIDs ==========
+*.log
+*.pid
+*.pid.lock
+
+# ========== Test Coverage ==========
+coverage/
+*.lcov
+
+# ========== MongoDB ==========
+dump/
+
+# ========== Packages ==========
+*.tgz
