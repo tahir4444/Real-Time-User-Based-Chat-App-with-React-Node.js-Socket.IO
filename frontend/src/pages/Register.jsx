@@ -10,7 +10,7 @@ function Register() {
 
   const handleRegister = async () => {
     try {
-      const res = await axios.post('/register', { username, password });
+      const res = await axios.post('/auth/register', { username, password });
       saveToken(res.data.token);
       navigate('/');
     } catch (err) {
