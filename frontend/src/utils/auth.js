@@ -1,24 +1,36 @@
-// utils/auth.js
+// src/utils/auth.js
+
 export const saveToken = (token, rememberMe = false) => {
   if (rememberMe) {
-    // Store in localStorage for persistent sessions
     localStorage.setItem('token', token);
+    sessionStorage.removeItem('token');
   } else {
-    // Store in sessionStorage for session-only
     sessionStorage.setItem('token', token);
+    localStorage.removeItem('token');
   }
 };
 
 export const getToken = () => {
-  // Check both storage locations
   return localStorage.getItem('token') || sessionStorage.getItem('token');
 };
 
 export const logout = () => {
-  // Clear from both storage locations
   localStorage.removeItem('token');
   sessionStorage.removeItem('token');
 };
-/* export const isLoggedIn = () => {
-  return !!getToken();
-}; */
+
+export const getStoredUser = () => {
+  const token = getToken();
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    // Check if token expired
+    if (payload.exp && payload.exp * 1000 < Date.now()) {
+      logout();
+      return null;
+    }
+    return payload;
+  } catch (err) {
+    return null;
+  }
+};

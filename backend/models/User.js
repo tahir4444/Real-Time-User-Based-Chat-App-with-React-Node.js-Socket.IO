@@ -1,82 +1,71 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import { pool } from '../config/db.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-const UserSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: [true, 'Please provide a username'],
-    unique: true,
-    trim: true,
-    minlength: [3, 'Username must be at least 3 characters'],
-    maxlength: [20, 'Username cannot exceed 20 characters'],
-    match: [
-      /^[a-zA-Z0-9_]+$/,
-      'Username can only contain letters, numbers and underscores',
-    ],
-  },
-  password: {
-    type: String,
-    required: [true, 'Please provide a password'],
-    minlength: [6, 'Password must be at least 6 characters'], // Fixed from 4 to 6
-    select: false,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+class User {
+  static async findByUsername(username) {
+    const [rows] = await pool.query(
+      'SELECT id, username, password, avatar, created_at FROM users WHERE username = ?',
+      [username]
+    );
+    return rows[0] || null;
+  }
 
-// Enhanced password hashing with error handling
-UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+  static async findById(id) {
+    const [rows] = await pool.query(
+      'SELECT id, username, avatar, status_text, created_at FROM users WHERE id = ?',
+      [id]
+    );
+    return rows[0] || null;
+  }
 
-  try {
+  static async updateStatus(userId, statusText) {
+    await pool.query(
+      'UPDATE users SET status_text = ? WHERE id = ?',
+      [statusText.trim().substring(0, 100), userId]
+    );
+    return statusText;
+  }
+
+  static async create({ username, password }) {
     const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (err) {
-    next(err);
-  }
-});
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-// More robust token generation
-UserSchema.methods.generateAuthToken = function () {
-  if (!process.env.JWT_SECRET) {
-    throw new Error('JWT_SECRET is not defined');
+    const [result] = await pool.query(
+      'INSERT INTO users (username, password) VALUES (?, ?)',
+      [username, hashedPassword]
+    );
+
+    return {
+      id: result.insertId,
+      username,
+      status_text: 'Hey there! I am using ChatApp',
+    };
   }
 
-  return jwt.sign(
-    {
-      id: this._id,
-      username: this.username,
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: process.env.JWT_EXPIRES_IN || '30d',
+  static async comparePassword(enteredPassword, hashedPassword) {
+    return bcrypt.compare(enteredPassword, hashedPassword);
+  }
+
+  static async getAllExcept(userId) {
+    const [rows] = await pool.query(
+      'SELECT id, username, avatar, status_text, created_at FROM users WHERE id != ? ORDER BY username ASC',
+      [userId]
+    );
+    return rows;
+  }
+
+  static generateAuthToken(user) {
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not configured');
     }
-  );
-};
 
-// Safer password comparison
-UserSchema.methods.matchPassword = async function (enteredPassword) {
-  try {
-    return await bcrypt.compare(enteredPassword, this.password);
-  } catch (err) {
-    console.error('Password comparison error:', err);
-    return false;
+    return jwt.sign(
+      { id: user.id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRATION || '30d' }
+    );
   }
-};
+}
 
-// Optimized username check
-UserSchema.statics.isUsernameTaken = async function (username) {
-  try {
-    const count = await this.countDocuments({ username });
-    return count > 0;
-  } catch (err) {
-    console.error('Username check error:', err);
-    throw err;
-  }
-};
-
-module.exports = mongoose.model('User', UserSchema);
+export default User;
